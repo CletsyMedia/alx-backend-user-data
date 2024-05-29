@@ -1,7 +1,3 @@
-#!/usr/bin/env python3
-"""
-Module for handling Personalize Data
-"""
 import logging
 from typing import List
 import re
@@ -95,3 +91,20 @@ def get_db() -> mysql.connector.connection.MySQLConnection:
                                                      host=host,
                                                      database=db_name)
     return cnx
+
+
+def main():
+    """ Main function to read and filter data """
+    logger = get_logger()
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM users;")
+    for row in cursor.fetchall():
+        filtered_row = filter_datum(
+            list(PII_FIELDS),
+            RedactingFormatter.REDACTION, ';'.join(map(str, row)), ';')
+        logger.info(filtered_row)
+
+
+if __name__ == "__main__":
+    main()
