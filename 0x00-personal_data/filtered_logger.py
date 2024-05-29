@@ -1,3 +1,7 @@
+#!/usr/bin/env python3
+"""
+Module for handling Personalize Data
+"""
 import logging
 from typing import List
 import re
