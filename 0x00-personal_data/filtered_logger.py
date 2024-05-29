@@ -4,6 +4,44 @@ Module for handling Personal Data
 """
 from typing import List
 import re
+import logging
+
+
+class RedactingFormatter(logging.Formatter):
+    """ Redacting Formatter class """
+
+    REDACTION = "***"
+    FORMAT = "[HOLBERTON] %(name)s %(levelname)s %(asctime)-15s: %(message)s"
+    SEPARATOR = ";"
+
+    def __init__(self, fields: List[str]):
+        """
+        Initialize RedactingFormatter instance.
+
+        Args:
+            fields (list): List of strings representing fields to redact.
+        """
+        super(RedactingFormatter, self).__init__(self.FORMAT)
+        self.fields = fields
+
+    def format(self, record: logging.LogRecord) -> str:
+        """
+        Format the specified record as text.
+
+        Args:
+            record (logging.LogRecord): The LogRecord to be formatted.
+
+        Returns:
+            str: Formatted log message.
+        """
+        message = super().format(record)
+        for field in self.fields:
+            pattern = re.compile(fr'{field}=[^;]*')
+            message = re.sub(pattern, f'{field}={self.REDACTION}', message)
+        return message
+
+
+PII_FIELDS = ("name", "email", "phone", "ssn", "password")
 
 
 def filter_datum(
@@ -28,3 +66,16 @@ def filter_datum(
         pattern = re.compile(fr'{field}=[^{separator}]*')
         message = re.sub(pattern, f'{field}={redaction}', message)
     return message
+
+
+def get_logger() -> logging.Logger:
+    """ Returns a Logger Object """
+    logger = logging.getLogger("user_data")
+    logger.setLevel(logging.INFO)
+    logger.propagate = False
+
+    stream_handler = logging.StreamHandler()
+    stream_handler.setFormatter(RedactingFormatter(list(PII_FIELDS)))
+    logger.addHandler(stream_handler)
+
+    return logger
