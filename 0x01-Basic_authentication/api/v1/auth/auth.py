@@ -17,7 +17,6 @@ class Auth:
         if not excluded_paths:
             return True
 
-        # Ensure that paths with and without trailing slashes are treated equally
         path = path.rstrip('/')
         excluded_paths = [p.rstrip('/') for p in excluded_paths]
 
