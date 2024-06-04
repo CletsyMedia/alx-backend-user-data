@@ -12,12 +12,13 @@ T = TypeVar('T')
 
 class BasicAuth(Auth):
     """ BasicAuth class """
-    pass
 
     def extract_base64_authorization_header(
             self, authorization_header: str) -> str:
-        """Extracts the Base64 part of the Authorization header
-        for Basic Authentication"""
+        """
+        Extracts the Base64 part of the Authorization header
+        for Basic Authentication
+        """
         if authorization_header is None or not isinstance(
                 authorization_header, str):
             return None
@@ -29,7 +30,9 @@ class BasicAuth(Auth):
 
     def decode_base64_authorization_header(
             self, base64_authorization_header: str) -> str:
-        """Decodes the Base64 part of the Authorization header"""
+        """
+        Decodes the Base64 part of the Authorization header
+        """
         if (base64_authorization_header is None or
                 not isinstance(base64_authorization_header, str)):
             return None
@@ -42,7 +45,9 @@ class BasicAuth(Auth):
 
     def extract_user_credentials(
             self, decoded_base64_authorization_header: str) -> (str, str):
-        """Extracts user email and password from the decoded Base64 string"""
+        """
+        Extracts user email and password from the decoded Base64 string
+        """
         if (decoded_base64_authorization_header is None or
                 not isinstance(decoded_base64_authorization_header, str)):
             return None, None
@@ -56,7 +61,9 @@ class BasicAuth(Auth):
 
     def user_object_from_credentials(
             self, user_email: str, user_pwd: str) -> TypeVar('User'):
-        """ Returns the User instance based on email and password """
+        """
+        Returns the User instance based on email and password
+        """
         if not user_email or not isinstance(user_email, str) or \
                 not user_pwd or not isinstance(user_pwd, str):
             return None
