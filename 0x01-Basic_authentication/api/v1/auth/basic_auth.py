@@ -67,7 +67,6 @@ class BasicAuth(Auth):
         if not user_instances:
             return None
 
-        # Assuming there's only one user with the given email
         user_instance = user_instances[0]
 
         # Check if the provided password matches the user's password
