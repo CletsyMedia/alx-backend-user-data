@@ -12,10 +12,14 @@ app = Flask(__name__)
 app.register_blueprint(app_views)
 CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
 
-# Import either Auth or BasicAuth based on AUTH_TYPE environment variable
-if getenv("AUTH_TYPE") == "basic_auth":
+# Import either Auth, BasicAuth, or SessionAuth based on AUTH_TYPE env
+auth_type = getenv("AUTH_TYPE")
+if auth_type == "basic_auth":
     from api.v1.auth.basic_auth import BasicAuth
     auth = BasicAuth()
+elif auth_type == "session_auth":
+    from api.v1.auth.session_auth import SessionAuth
+    auth = SessionAuth()
 else:
     from api.v1.auth.auth import Auth
     auth = Auth()
@@ -40,9 +44,6 @@ def before_request():
 
     if auth.current_user(request) is None:
         abort(403)
-
-    # Assign the result of auth.current_user(request) to request.current_user
-    request.current_user = auth.current_user(request)
 
 
 @app.errorhandler(404)
