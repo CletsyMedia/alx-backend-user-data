@@ -45,7 +45,10 @@ def before_request():
             request) is None and auth.session_cookie(request) is None:
         abort(401)
 
-    if auth.current_user(request) is None:
+    # Assign the result of auth.current_user(request) to request.current_user
+    request.current_user = auth.current_user(request)
+
+    if request.current_user is None:
         abort(403)
 
 

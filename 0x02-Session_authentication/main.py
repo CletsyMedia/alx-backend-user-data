@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
-""" Cookie server
+""" Main 0
 """
-from flask import Flask, request
-from api.v1.auth.auth import Auth
+import base64
+from api.v1.auth.basic_auth import BasicAuth
+from models.user import User
 
-auth = Auth()
+""" Create a user test """
+user_email = "bob@hbtn.io"
+user_clear_pwd = "H0lbertonSchool98!"
 
-app = Flask(__name__)
+user = User()
+user.email = user_email
+user.password = user_clear_pwd
+print("New user: {}".format(user.id))
+user.save()
 
-@app.route('/', methods=['GET'], strict_slashes=False)
-def root_path():
-    """ Root path
-    """
-    return "Cookie value: {}\n".format(auth.session_cookie(request))
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port="5000")
+basic_clear = "{}:{}".format(user_email, user_clear_pwd)
+print("Basic Base64: {}".format(base64.b64encode(basic_clear.encode('utf-8')).decode("utf-8")))
