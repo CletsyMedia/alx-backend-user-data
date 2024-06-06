@@ -4,7 +4,7 @@ Session authentication
 """
 from api.v1.auth.auth import Auth
 import uuid
-from models.user import User  # Assuming User model is imported correctly
+from models.user import User
 
 
 class SessionAuth(Auth):
