@@ -9,6 +9,7 @@ from models.user import User
 # Import the auth object from the app module
 from api.v1.app import auth
 
+
 @app_views.route('/auth_session/login', methods=['POST'], strict_slashes=False)
 def session_login():
     """ Handle session login """
