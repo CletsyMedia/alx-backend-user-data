@@ -2,7 +2,7 @@
 """
 Session authentication view
 """
-from flask import request, jsonify, current_app
+from flask import request, jsonify, current_app, abort
 from api.v1.views import app_views
 from models.user import User
 
@@ -36,6 +36,20 @@ def session_login():
         # Set the cookie using the SESSION_NAME from the app configuration
         response.set_cookie(current_app.config['SESSION_NAME'], session_id)
         return response
+
+    # Return Method Not Allowed for GET requests
+    return jsonify({"error": "Method Not Allowed"}), 405
+
+
+def session_logout():
+    """ Handle session logout """
+    if request.method == 'DELETE':
+        # Use the destroy_session method from the auth object
+        if not auth.destroy_session(request):
+            abort(404)
+
+        # Return an empty JSON dictionary with status code 200
+        return jsonify({}), 200
 
     # Return Method Not Allowed for GET requests
     return jsonify({"error": "Method Not Allowed"}), 405
