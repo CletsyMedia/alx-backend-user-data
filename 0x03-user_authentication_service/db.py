@@ -10,7 +10,7 @@ from user import Base, User
 
 
 class DB:
-    """ DB Class for Object Relational Mapping """
+    """ DB Class for Object Reational Mapping """
 
     def __init__(self):
         """ Constructor Method """
@@ -41,24 +41,16 @@ class DB:
         """ Finds user by key word args
         Return: First row found in the users table as filtered by kwargs
         """
-        if not kwargs:
-            raise InvalidRequestError("No search criteria provided")
-
-        column_names = User.__table__.columns.keys()
-        for key in kwargs.keys():
-            if key not in column_names:
-                raise InvalidRequestError(f"Invalid column name: {key}")
-
         try:
-            user = self._session.query(User).filter_by(**kwargs).one()
+            if not kwargs:
+                raise InvalidRequestError
+
+            user = self._session.query(User).filter_by(**kwargs).first()
+            if not user:
+                raise NoResultFound
+
             return user
         except NoResultFound:
-            return None
-
-
-if __name__ == "__main__":
-    my_db = DB()
-    user_1 = my_db.add_user("test@test.com", "SuperHashedPwd")
-    print(user_1.id)
-    user_2 = my_db.add_user("test1@test.com", "SuperHashedPwd1")
-    print(user_2.id)
+            raise NoResultFound("User not found")
+        except InvalidRequestError:
+            raise InvalidRequestError("Invalid query arguments")
