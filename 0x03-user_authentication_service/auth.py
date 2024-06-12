@@ -5,6 +5,8 @@ Auth module
 import bcrypt
 from db import DB
 from user import User
+from sqlalchemy.orm.exc import NoResultFound  # Add this import statement
+
 
 def _hash_password(password: str) -> bytes:
     """
@@ -19,6 +21,7 @@ def _hash_password(password: str) -> bytes:
     salt = bcrypt.gensalt()
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
     return hashed_password
+
 
 class Auth:
     """Auth class to interact with the authentication database."""
@@ -41,17 +44,16 @@ class Auth:
             ValueError: If the user already exists.
         """
         # Check if user already exists
-        if self._db.find_user_by_email(email):
+        try:
+            self._db.find_user_by(email=email)
             raise ValueError(f"User {email} already exists")
+        except NoResultFound:
+            pass
 
         # Hash the password
         hashed_password = _hash_password(password)
 
         # Save user to the database
-        user = User(email, hashed_password)
-        self._db.add_user(user)
+        user = self._db.add_user(email, hashed_password)
 
         return user
-
-if __name__ == "__main__":
-    print(_hash_password("Hello Holberton"))
