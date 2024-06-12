@@ -91,7 +91,7 @@ class Auth:
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
         return hashed_password
 
-    def _generate_uuid() -> str:
+    def _generate_uuid(self) -> str:
         """
         Generate a new UUID.
 
@@ -99,3 +99,4 @@ class Auth:
             str: A string representation of the generated UUID.
         """
         return str(uuid.uuid4())
+
