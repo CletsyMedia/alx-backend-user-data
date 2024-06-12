@@ -5,7 +5,7 @@ Auth module
 import bcrypt
 from db import DB
 from user import User
-from sqlalchemy.orm.exc import NoResultFound  # Add this import statement
+from sqlalchemy.orm.exc import NoResultFound
 
 
 def _hash_password(password: str) -> bytes:
@@ -57,3 +57,35 @@ class Auth:
         user = self._db.add_user(email, hashed_password)
 
         return user
+
+    def valid_login(self, email: str, password: str) -> bool:
+        """
+        Validate user credentials.
+
+        Args:
+            email: The email of the user.
+            password: The password to be validated.
+
+        Returns:
+            bool: True if the credentials are valid, False otherwise.
+        """
+        try:
+            user = self._db.find_user_by(email=email)
+            return bcrypt.checkpw(
+                password.encode('utf-8'), user.hashed_password)
+        except NoResultFound:
+            return False
+
+    def _hash_password(password: str) -> bytes:
+        """
+        Hashes a password using bcrypt hashpw
+
+        Args:
+            password: A string representing the password to be hashed
+
+        Returns:
+            Bytes: A salted hash of the input password
+        """
+        salt = bcrypt.gensalt()
+        hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
+        return hashed_password
