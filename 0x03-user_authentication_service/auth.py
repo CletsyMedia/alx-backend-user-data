@@ -96,3 +96,28 @@ class Auth:
         salt = bcrypt.gensalt()
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
         return hashed_password
+
+    def create_session(self, email: str) -> str:
+        """
+        Create a session for the user and return the session ID.
+
+        Args:
+            email: The email of the user.
+
+        Returns:
+            str: The session ID.
+        """
+        try:
+            # Find the user by email
+            user = self._db.find_user_by(email=email)
+        except NoResultFound:
+            return None
+
+        # Generate a new UUID for the session ID
+        session_id = _generate_uuid()
+
+        # Update the user's session ID in the database
+        user.session_id = session_id
+        self._db.update_user(user.id, session_id=session_id)
+
+        return session_id
