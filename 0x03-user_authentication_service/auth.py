@@ -6,7 +6,7 @@ import bcrypt
 from db import DB
 from user import User
 from uuid import uuid4
-from typing import TypeVar
+from typing import Union
 from sqlalchemy.orm.exc import NoResultFound
 
 
@@ -123,15 +123,19 @@ class Auth:
 
         return session_id
 
-    def get_user_from_session_id(self, session_id: str) -> TypeVar('User'):
-        """Gets a user from a session ID"""
+    def get_user_from_session_id(self, session_id: str) -> Union[str, None]:
+        """It takes a single session_id string argument
+        Returns a string or None
+        """
+        if session_id is None:
+            return None
+
         try:
-            if session_id is None:
-                return None
             user = self._db.find_user_by(session_id=session_id)
-            return user
-        except Exception:
-            raise
+        except NoResultFound:
+            return None
+
+        return user
 
     def destroy_session(self, user_id: int) -> None:
         """
@@ -202,4 +206,5 @@ class Auth:
         # Update user's hashed_password and reset_token fields in the database
         user.hashed_password = hashed_password
         user.reset_token = None
-        self._db.update_user(user.id, hashed_password=hashed_password, reset_token=None)
+        self._db.update_user(
+            user.id, hashed_password=hashed_password, reset_token=None)
