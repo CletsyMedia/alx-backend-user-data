@@ -132,3 +132,16 @@ class Auth:
             return user
         except Exception:
             raise
+
+    def destroy_session(self, user_id: int) -> None:
+        """
+        Destroy the session associated with the given user ID.
+
+        Args:
+            user_id: The ID of the user whose session is to be destroyed.
+        """
+        try:
+            user = self._db.find_user_by(id=user_id)
+            self._db.update_user(user.id, session_id=None)
+        except NoResultFound:
+            pass
