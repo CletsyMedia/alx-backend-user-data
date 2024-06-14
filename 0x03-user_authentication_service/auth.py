@@ -202,7 +202,4 @@ class Auth:
         # Update user's hashed_password and reset_token fields in the database
         user.hashed_password = hashed_password
         user.reset_token = None
-        self._db.update_user(
-            user.id,
-            hashed_password=hashed_password,
-            reset_token=None)
+        self._db.update_user(user.id, hashed_password=hashed_password, reset_token=None)
