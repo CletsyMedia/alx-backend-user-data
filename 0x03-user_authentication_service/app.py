@@ -3,7 +3,8 @@
 Basic Flask app.
 """
 
-from flask import Flask, jsonify, request, make_response, abort
+from flask import Flask, jsonify, request, make_response
+from flask import abort, redirect, url_for
 from auth import Auth
 
 app = Flask(__name__)
@@ -54,6 +55,22 @@ def login():
     response.set_cookie('session_id', session_id)
 
     return response
+
+
+@app.route('/sessions', methods=['DELETE'])
+def logout():
+    # Get session ID from the request cookies
+    session_id = request.cookies.get('session_id')
+
+    # Find the user with the session ID and destroy the session
+    user = AUTH.get_user_from_session_id(session_id)
+    if user:
+        AUTH.destroy_session(user.id)
+        # Redirect the user to the index page after logout
+        return redirect(url_for('index'))
+    else:
+        # If user does not exist, respond with 403 HTTP status
+        abort(403)
 
 
 if __name__ == "__main__":
