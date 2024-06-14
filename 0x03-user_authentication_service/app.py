@@ -105,29 +105,18 @@ def get_reset_password_token():
         abort(403)
 
 
-@app.route('/reset_password', methods=['PUT'])
-def update_password() -> str:
-    """ PUT /reset_password
-    Updates password with reset token
-    Return:
-        - 400 if bad request
-        - 403 if not valid reset token
-        - 200 and JSON Payload if valid
-    """
-    try:
-        email = request.form['email']
-        reset_token = request.form['reset_token']
-        new_password = request.form['new_password']
-    except KeyError:
-        abort(400)
+@app.route('/update_password', methods=['POST'])
+def update_password():
+    # Get reset token and new password from form data
+    reset_token = request.form.get('reset_token')
+    new_password = request.form.get('new_password')
 
+    # Call the update_password method from your Auth class
     try:
-        AUTH.update_password(reset_token, new_password)
+        auth.update_password(reset_token, new_password)
+        return jsonify({"message": "Password updated successfully"}), 200
     except ValueError:
         abort(403)
-
-    msg = {"email": email, "message": "Password updated"}
-    return jsonify(msg), 200
 
 
 if __name__ == "__main__":
